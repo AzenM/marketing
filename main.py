@@ -15,7 +15,7 @@ def month_diff(a, b):
     return (a.year - b.year) * 12 + (a.month - b.month)
 
 # ============ CHARGEMENT ============
-st.title("📦 Birchbox LTV Analysis – Questions 1 à 6")
+st.title("Birchbox LTV Analysis – Questions 1 à 6")
 
 
 df = pd.read_csv("Alexandre Marie de ficquelmont- Albert School - B2 S1 - Data set_ LTV modelling for Birchbox - Albert School - B2 S1 - Data set_ LTV modelling for Birchbox - Feuille 1.csv", sep=None, engine="python")
@@ -40,10 +40,9 @@ df["order_value"] = pd.to_numeric(df["order_value"], errors="coerce")
 df = df.dropna(subset=["customer_id", "order_date", "order_value"])
 df["order_month"] = df["order_date"].values.astype("datetime64[M]")
 
-st.success(f"✅ Données chargées : {len(df):,} lignes, {df['customer_id'].nunique():,} clients, {df['product'].nunique():,} produits")
 
 # =============================== Q1 ===============================
-st.header("🟩 Q1. Revenu total par cohorte mensuelle et taille de cohorte")
+st.header("Q1. Revenu total par cohorte mensuelle et taille de cohorte")
 
 def compute_q1(df):
     first_order = df.groupby("customer_id")["order_month"].min().rename("cohort_month")
@@ -59,13 +58,13 @@ pivot_q1 = cohort_revenue.pivot(index="cohort_month", columns="months_since", va
 st.dataframe(pivot_q1.round(2), use_container_width=True)
 st.dataframe(cohort_size, use_container_width=True)
 
-with st.expander("💻 Code Q1"):
+with st.expander("Code Q1"):
     st.code(inspect.getsource(compute_q1), language="python")
 
-st.caption("🧩 **Modif clé** : On calcule `months_since` comme différence exacte en mois pour corriger le décalage entre périodes (corrige les erreurs temporelles).")
+st.caption("**Modif clé** : On calcule `months_since` comme différence exacte en mois pour corriger le décalage entre périodes (corrige les erreurs temporelles).")
 
 # =============================== Q2 ===============================
-st.header("🟦 Q2. ARPU cumulé par cohorte")
+st.header("Q2. ARPU cumulé par cohorte")
 
 def compute_q2(df):
     first_order = df.groupby("customer_id")["order_month"].min().rename("cohort_month")
@@ -83,13 +82,13 @@ cohort_monthly = compute_q2(df)
 pivot_q2 = cohort_monthly.pivot(index="cohort_month", columns="months_since", values="cum_arpu").fillna("")
 st.dataframe(pivot_q2.round(2), use_container_width=True)
 
-with st.expander("💻 Code Q2"):
+with st.expander("Code Q2"):
     st.code(inspect.getsource(compute_q2), language="python")
 
-st.caption("📈 On cumule le revenu par cohorte, puis on divise par la taille pour obtenir le **ARPU cumulé** (Average Revenue Per User).")
+st.caption("On cumule le revenu par cohorte, puis on divise par la taille pour obtenir le **ARPU cumulé** (Average Revenue Per User).")
 
 # =============================== Q3 ===============================
-st.header("🟨 Q3. Moyenne pondérée de l’ARPU cumulé et modélisation LTV")
+st.header("Q3. Moyenne pondérée de l’ARPU cumulé et modélisation LTV")
 
 def weighted_arpu(cohort_monthly):
     recs = []
@@ -112,13 +111,13 @@ ax.set_ylabel("ARPU cumulé pondéré (€)")
 ax.set_title("ARPU cumulé pondéré (global)")
 st.pyplot(fig)
 
-with st.expander("💻 Code Q3"):
+with st.expander("Code Q3"):
     st.code(inspect.getsource(weighted_arpu), language="python")
 
-st.caption("🧮 Moyenne pondérée : elle tient compte de la taille de chaque cohorte. Utilisée ensuite pour modéliser le LTV 4–5 ans.")
+st.caption("Moyenne pondérée : elle tient compte de la taille de chaque cohorte. Utilisée ensuite pour modéliser le LTV 4–5 ans.")
 
 # =============================== Q4 ===============================
-st.header("🟧 Q4. Interprétation de l’évolution de l’ARPU et comportement client")
+st.header("Q4. Interprétation de l’évolution de l’ARPU et comportement client")
 st.markdown("""
 **Constat :**
 - L’ARPU cumulé croît rapidement puis se stabilise : typique d’une décroissance du réachat.
@@ -131,7 +130,7 @@ st.markdown("""
 """)
 
 # =============================== Q5 ===============================
-st.header("🟪 Q5. Filtre ARPU cumulé par produit")
+st.header("Q5. Filtre ARPU cumulé par produit")
 
 produits = ["(Tous)"] + sorted(df["product"].dropna().unique().tolist())
 selected_product = st.selectbox("Sélectionne un produit :", produits)
@@ -147,10 +146,10 @@ ax2.legend(fontsize=8, bbox_to_anchor=(1.05, 1), loc="upper left")
 ax2.set_title(f"ARPU cumulé - {selected_product}")
 st.pyplot(fig2)
 
-st.caption("📊 Ce filtre permet d’isoler la dynamique ARPU d’un produit précis.")
+st.caption("Ce filtre permet d’isoler la dynamique ARPU d’un produit précis.")
 
 # =============================== Q6 ===============================
-st.header("🟥 Q6. Récap LTV(1m) / LTV(24m) par produit")
+st.header("Q6. Récap LTV(1m) / LTV(24m) par produit")
 
 def product_recap(df):
     d = df.copy()
@@ -181,7 +180,7 @@ def product_recap(df):
 
 recap_df = product_recap(df)
 st.dataframe(recap_df.round(3), use_container_width=True)
-st.caption("💡 Le ratio LTV(24m)/LTV(1m) montre les produits qui génèrent le plus de valeur long terme.")
+st.caption("Le ratio LTV(24m)/LTV(1m) montre les produits qui génèrent le plus de valeur long terme.")
 
-with st.expander("💻 Code Q6"):
+with st.expander("Code Q6"):
     st.code(inspect.getsource(product_recap), language="python")
